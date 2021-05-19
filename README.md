@@ -70,6 +70,17 @@ public function index()
 }
 ```
 
+If you want to customize paginator base url just use setPath function
+
+```php
+public function index()
+{
+    $users = \App\User::simplePaginate(5);
+    $users->setPath('custom/url');
+    return view('users.index', ['users' => $users]);
+}
+```
+
 If you want to customize or add translations for the "page" url segment, you can publish the language files.
 
 ``` bash
@@ -119,9 +130,10 @@ public function nextPageUrl(Paginator $paginator)
 
 ```php
 /**
+ * @param  \Illuminate\Contracts\Pagination\Paginator $paginator
  * @return int|null
  */
-public function previousPage()
+public function previousPage(Paginator $paginator)
 ```
 
 ```php
@@ -141,11 +153,12 @@ public function previousPageUrl($full = false)
 
 ```php
 /**
+ * @param  \Illuminate\Contracts\Pagination\Paginator $paginator
  * @param int  $page
  * @param bool $full
  * @return string
  */
-public function pageUrl($page, $full = false)
+public function pageUrl(Paginator $paginator, $page, $full = false)
 ```
 
 If `$full` is true, the first page will be a fully qualified url. Ex. `/users/page/1` instead if just `/users` (this is the default).
@@ -177,25 +190,64 @@ public function allUrls(LengthAwarePaginator $paginator, $full = false)
 /**
  * @param  \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginator
  * @param  bool $full
- * @param  string $class
+ * @param  array $styles
  * @param  bool $additionalLinks
  * @return string
  */
-public function renderPageList(LengthAwarePaginator $paginator, $full = false, $class = null, $additionalLinks = false)
+public function renderPageList(LengthAwarePaginator $paginator, $full = false, $styles = null, $additionalLinks = false)
 
 ```
 
 ```html
 /**
- * Example : {!! PaginateRoute::renderPageList($items,true,'pagination',true) !!}
+ * Example : {!! PaginateRoute::renderPageList($items,true,null,true) !!}
  */
 <!-- Example output: -->
-<ul class="pagination">
+<ul>
     <li><a href="http://example.com/news">1</a></li>
     <li><a href="http://example.com/news/page/2">2</a></li>
     <li class="active"><a href="http://example.com/news/page/3">3</a></li>
     <li><a href="http://example.com/news/page/4">4</a></li>
     <li><a href="http://example.com/news/page/4">&raquo;</a></li>
+</ul>
+```
+You can add styles for paginator like this:
+
+```html
+/**
+ * Example : {!! PaginateRoute::renderPageList($companies, false,
+ * [
+ *    'ul' => 'pagination-list',
+ *    'li' => 'pagination-list-item',
+ *    'a' => 'pagination-list-link',
+ *    'previous_a' => 'pagination-prev',
+ *    'next_a' => 'pagination-next',
+ *    'active_a' => 'pagination-active',
+ *    'previous_label' => '<i class="fas fa-chevron-left"></i>',
+ *    'next_label' => '<i class="fas fa-chevron-right"></i>',
+ * ],
+ * true) !!}
+ */
+<!-- Example output: -->
+<ul class="pagination-list">
+    <li class="pagination-list-item">
+        <a href="http://example.com/news" class="pagination-prev"><i class="fas fa-chevron-left"></i></a>
+    </li>
+    <li class="pagination-list-item">
+        <a href="http://example.com/news/page/2" class="pagination-list-link pagination-active">2</a>
+    </li>
+    <li class="pagination-list-item">
+        <a href="http://example.com/news/page/3" class="pagination-list-link">3</a>
+    </li>
+    <li class="pagination-list-item">
+        <a href="http://example.com/news/page/4" class="pagination-list-link">4</a>
+    </li>
+    <li class="pagination-list-item">
+        <a href="http://example.com/news/page/5" class="pagination-list-link">4</a>
+    </li>
+    <li class="pagination-list-item">
+        <a href="http://example.com/news/page/3" class="pagination-next"><i class="fas fa-chevron-right"></i></a>
+    </li>
 </ul>
 ```
 
